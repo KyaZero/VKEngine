@@ -5,3 +5,4 @@ bin/*.exe
 bin/*.lib
 bin/*.txt
 bin/saved/*.txt
+bin/shaders/*.spv

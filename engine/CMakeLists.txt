@@ -6,6 +6,8 @@ set(core_files
     "src/Core/Logger.cpp")
 
 set(graphics_files
+    "src/Graphics/Model.h"
+    "src/Graphics/Model.cpp"
     "src/Graphics/SwapChain.h"
     "src/Graphics/SwapChain.cpp"
     "src/Graphics/Device.h"

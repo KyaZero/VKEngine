@@ -7,6 +7,7 @@ namespace vke
 {
 	App::App() : m_Window(WIDTH, HEIGHT, "Hello Vulkan!"), m_Device(m_Window), m_SwapChain(m_Device, m_Window.GetExtent()), m_Pipeline(), m_PipelineLayout()
 	{
+		LoadModels();
 		CreatePipelineLayout();
 		CreatePipeline();
 		CreateCommandBuffers();
@@ -24,7 +25,21 @@ namespace vke
 			glfwPollEvents();
 			DrawFrame();
 		}
+
+		vkDeviceWaitIdle(m_Device.Device());
 	}
+
+	void App::LoadModels()
+	{
+		std::vector<VkeModel::Vertex> vertices{
+			{{  0.0f, -0.5f }},
+			{{  0.5f,  0.5f }},
+			{{ -0.5f,  0.5f }}
+		};
+
+		m_Model = std::make_unique<VkeModel>(m_Device, vertices);
+	}
+
 	void App::CreatePipelineLayout()
 	{
 		VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
@@ -92,7 +107,8 @@ namespace vke
 			vkCmdBeginRenderPass(m_CommandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
 			m_Pipeline->Bind(m_CommandBuffers[i]);
-			vkCmdDraw(m_CommandBuffers[i], 3, 1, 0, 0);
+			m_Model->Bind(m_CommandBuffers[i]);
+			m_Model->Draw(m_CommandBuffers[i]);
 
 			vkCmdEndRenderPass(m_CommandBuffers[i]);
 			if (vkEndCommandBuffer(m_CommandBuffers[i]) != VK_SUCCESS)

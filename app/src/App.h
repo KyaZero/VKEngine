@@ -3,6 +3,7 @@
 #include "Graphics/Device.h"
 #include "Graphics/SwapChain.h"
 #include "Graphics/Pipeline.h"
+#include "Graphics/Model.h"
 
 #include <memory>
 #include <vector>
@@ -24,6 +25,7 @@ namespace vke
 		static constexpr i32 HEIGHT = 600;
 
 	private:
+		void LoadModels();
 		void CreatePipelineLayout();
 		void CreatePipeline();
 		void CreateCommandBuffers();
@@ -35,5 +37,6 @@ namespace vke
 		std::unique_ptr<VkePipeline> m_Pipeline;
 		VkPipelineLayout m_PipelineLayout;
 		std::vector<VkCommandBuffer> m_CommandBuffers;
+		std::unique_ptr<VkeModel> m_Model;
 	};
 }
