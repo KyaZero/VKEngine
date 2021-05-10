@@ -19,7 +19,9 @@ set(all_files
     ${core_files}
     ${graphics_files})
 
-add_library(${target_name} STATIC ${all_files})
+add_library(${target_name} STATIC ${all_files} ${SHADERS})
+
+compile_shaders(${target_name} ${CMAKE_CURRENT_SOURCE_DIR}/shaders ${CMAKE_HOME_DIRECTORY}/bin/shaders)
 
 target_precompile_headers(${target_name}
 PRIVATE
