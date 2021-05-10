@@ -8,7 +8,6 @@ namespace vke
     {
         VkViewport viewport;
         VkRect2D scissor;
-        VkPipelineViewportStateCreateInfo viewportInfo;
         VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo;
         VkPipelineRasterizationStateCreateInfo rasterizationInfo;
         VkPipelineMultisampleStateCreateInfo multisampleInfo;
@@ -29,7 +28,8 @@ namespace vke
         VkePipeline(const VkePipeline&) = delete;
         VkePipeline& operator=(const VkePipeline&) = delete;
 
-        static PipelineConfigInfo DefaultPipelineConfigInfo(u32 width, u32 height);
+        void Bind(VkCommandBuffer commandBuffer);
+        static void DefaultPipelineConfigInfo(PipelineConfigInfo& configInfo, u32 width, u32 height);
 
     private:
         static std::vector<char> ReadFile(const std::string& filepath);

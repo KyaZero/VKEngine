@@ -27,7 +27,7 @@ namespace vke
 		uint32_t Width() { return m_SwapChainExtent.width; }
 		uint32_t Height() { return m_SwapChainExtent.height; }
 
-		float ExtentAspectRatio() { return (float)(m_SwapChainExtent.width) / (float)(m_SwapChainExtent.height); }
+		float ExtentAspectRatio() { return static_cast<float>(m_SwapChainExtent.width) / static_cast<float>(m_SwapChainExtent.height); }
 		VkFormat FindDepthFormat();
 
 		VkResult AcquireNextImage(uint32_t* imageIndex);

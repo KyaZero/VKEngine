@@ -7,9 +7,11 @@ int main()
 	vke::Logger::Create(false);
 	vke::Logger::SetLevel(vke::Logger::Level::Info);
 
-	vke::App app{};
+	{
+		vke::App app{};
 
-	app.Run();
+		app.Run();
+	}
 
 	vke::Logger::Destroy();
 	return EXIT_SUCCESS;

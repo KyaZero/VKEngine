@@ -11,7 +11,7 @@ namespace vke
 	class VkeWindow
 	{
 	public:
-		VkeWindow(i32 w, i32 h, std::string name);
+		VkeWindow(int w, int h, std::string name);
 		~VkeWindow();
 
 		VkeWindow(const VkeWindow&) = delete;
@@ -20,6 +20,7 @@ namespace vke
 		bool ShouldClose() { return glfwWindowShouldClose(m_Window); }
 
 		void CreateWindowSurface(VkInstance instance, VkSurfaceKHR* surface);
+		VkExtent2D GetExtent() { return { static_cast<uint32_t>(m_Width), static_cast<uint32_t>(m_Height) }; }
 
 	private:
 		void InitWindow();
