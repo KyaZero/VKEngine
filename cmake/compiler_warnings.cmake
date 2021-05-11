@@ -31,6 +31,7 @@ if(NOT TARGET compiler_warnings)
             /wd4244
             /wd4201					# nonstandard extension used : nameless struct/union
             /wd4555                 # result of expression not used
+            /wd4324                 # structure was padded due to alignment specifier
             /wd26812
             )
     else()
