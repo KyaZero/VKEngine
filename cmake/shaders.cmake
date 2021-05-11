@@ -1,7 +1,7 @@
 function(compile_shaders TARGET SHADERS_IN_DIR SHADERS_OUT_DIR)
     find_program(GLSLC glslc)
 
-    file(GLOB SHADERS "${SHADERS_IN_DIR}/*.vert" "${SHADERS_IN_DIR}/*.frag")
+    file(GLOB_RECURSE SHADERS "${SHADERS_IN_DIR}/*.vert" "${SHADERS_IN_DIR}/*.frag")
     file(MAKE_DIRECTORY ${SHADERS_OUT_DIR})
 
     foreach(SHADER ${SHADERS})
