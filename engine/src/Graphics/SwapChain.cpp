@@ -13,12 +13,22 @@ namespace vke
 		m_SwapChainExtent(),
 		m_SwapChainImageFormat()
 	{
-		CreateSwapChain();
-		CreateImageViews();
-		CreateRenderPass();
-		CreateDepthResources();
-		CreateFramebuffers();
-		CreateSyncObjects();
+		Init();
+	}
+
+	VkeSwapChain::VkeSwapChain(VkeDevice& device, VkExtent2D windowExtent, std::shared_ptr<VkeSwapChain> previous) :
+		m_Device(device),
+		m_WindowExtent(windowExtent),
+		m_CurrentFrame(0),
+		m_RenderPass(),
+		m_SwapChain(),
+		m_SwapChainExtent(),
+		m_SwapChainImageFormat(),
+		m_OldSwapChain(previous)
+	{
+		Init();
+
+		m_OldSwapChain = nullptr;
 	}
 
 	VkeSwapChain::~VkeSwapChain()
@@ -117,6 +127,16 @@ namespace vke
 		return result;
 	}
 
+	void VkeSwapChain::Init()
+	{
+		CreateSwapChain();
+		CreateImageViews();
+		CreateRenderPass();
+		CreateDepthResources();
+		CreateFramebuffers();
+		CreateSyncObjects();
+	}
+
 	void VkeSwapChain::CreateSwapChain()
 	{
 		SwapChainSupportDetails swapChainSupport = m_Device.GetSwapChainSupport();
@@ -164,7 +184,7 @@ namespace vke
 		createInfo.presentMode = presentMode;
 		createInfo.clipped = VK_TRUE;
 
-		createInfo.oldSwapchain = VK_NULL_HANDLE;
+		createInfo.oldSwapchain = m_OldSwapChain == nullptr ? VK_NULL_HANDLE : m_OldSwapChain->m_SwapChain;
 
 		if (vkCreateSwapchainKHR(m_Device.Device(), &createInfo, nullptr, &m_SwapChain) != VK_SUCCESS)
 		{

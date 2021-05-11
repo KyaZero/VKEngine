@@ -4,6 +4,7 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 
 namespace vke
 {
@@ -13,6 +14,7 @@ namespace vke
 		static constexpr int MAX_FRAMES_IN_FLIGHT = 2;
 
 		VkeSwapChain(VkeDevice& device, VkExtent2D windowExtent);
+		VkeSwapChain(VkeDevice& device, VkExtent2D windowExtent, std::shared_ptr<VkeSwapChain> previous);
 		~VkeSwapChain();
 
 		VkeSwapChain(const VkeSwapChain&) = delete;
@@ -34,6 +36,7 @@ namespace vke
 		VkResult SubmitCommandBuffers(const VkCommandBuffer* buffers, uint32_t* imageIndex);
 
 	private:
+		void Init();
 		void CreateSwapChain();
 		void CreateImageViews();
 		void CreateDepthResources();
@@ -62,6 +65,7 @@ namespace vke
 		VkExtent2D m_WindowExtent;
 
 		VkSwapchainKHR m_SwapChain;
+		std::shared_ptr<VkeSwapChain> m_OldSwapChain;
 
 		std::vector<VkSemaphore> m_ImageAvailableSemaphores;
 		std::vector<VkSemaphore> m_RenderFinishedSemaphores;

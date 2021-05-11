@@ -29,11 +29,14 @@ namespace vke
 		void CreatePipelineLayout();
 		void CreatePipeline();
 		void CreateCommandBuffers();
+		void FreeCommandBuffers();
 		void DrawFrame();
+		void RecreateSwapChain();
+		void RecordCommandBuffer(int imageIndex);
 
 		VkeWindow m_Window;
 		VkeDevice m_Device;
-		VkeSwapChain m_SwapChain;
+		std::unique_ptr<VkeSwapChain> m_SwapChain;
 		std::unique_ptr<VkePipeline> m_Pipeline;
 		VkPipelineLayout m_PipelineLayout;
 		std::vector<VkCommandBuffer> m_CommandBuffers;
