@@ -6,18 +6,20 @@
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
+#include <glm/gtc/constants.hpp>
 
 namespace vke
 {
 	struct PushConstantData
 	{
+		glm::mat2 transform{ 1.0f };
 		glm::vec2 offset;
 		alignas(16) glm::vec3 color;
 	};
 
 	App::App() : m_Window(WIDTH, HEIGHT, "Hello Vulkan!"), m_Device(m_Window), m_SwapChain(), m_Pipeline(), m_PipelineLayout()
 	{
-		LoadModels();
+		LoadGameObjects();
 		CreatePipelineLayout();
 		RecreateSwapChain();
 		CreateCommandBuffers();
@@ -39,15 +41,36 @@ namespace vke
 		vkDeviceWaitIdle(m_Device.Device());
 	}
 
-	void App::LoadModels()
+	void App::LoadGameObjects()
 	{
-		std::vector<VkeModel::Vertex> vertices{
+		std::vector<Model::Vertex> vertices{
 			{{  0.0f, -0.5f }, {1.0f, 0.0f, 0.0f}},
 			{{  0.5f,  0.5f }, {0.0f, 1.0f, 0.0f}},
 			{{ -0.5f,  0.5f }, {0.0f, 0.0f, 1.0f}}
 		};
 
-		m_Model = std::make_unique<VkeModel>(m_Device, vertices);
+		auto model = std::make_shared<Model>(m_Device, vertices);
+
+		std::vector<glm::vec3> colors{
+			{1.f, .7f, .73f},
+			{1.f, .87f, .73f},
+			{1.f, 1.f, .73f},
+			{.73f, 1.f, .8f},
+			{.73, .88f, 1.f} 
+		};
+		for (auto& color : colors) 
+		{
+			color = glm::pow(color, glm::vec3{ 2.2f });
+		}
+		for (int i = 0; i < 40; i++) 
+		{
+			auto triangle = GameObject::CreateGameObject();
+			triangle.model = model;
+			triangle.transform.scale = glm::vec2(.5f) + i * 0.025f;
+			triangle.transform.rotation = i * glm::pi<float>() * .025f;
+			triangle.color = colors[i % colors.size()];
+			m_GameObjects.push_back(std::move(triangle));
+		}
 	}
 
 	void App::CreatePipelineLayout()
@@ -76,11 +99,11 @@ namespace vke
 		ASSERT_LOG(m_PipelineLayout != nullptr, "Cannot create pipeline before pipeline layout!");
 
 		PipelineConfigInfo pipelineConfig {};
-		VkePipeline::DefaultPipelineConfigInfo(pipelineConfig);
+		GraphicsPipeline::DefaultPipelineConfigInfo(pipelineConfig);
 		pipelineConfig.renderPass = m_SwapChain->GetRenderPass();
 		pipelineConfig.pipelineLayout = m_PipelineLayout;
 
-		m_Pipeline = std::make_unique<VkePipeline>(m_Device, "shaders/simple_shader.vert.spv", "shaders/simple_shader.frag.spv", pipelineConfig);
+		m_Pipeline = std::make_unique<GraphicsPipeline>(m_Device, "shaders/simple_shader.vert.spv", "shaders/simple_shader.frag.spv", pipelineConfig);
 	}
 
 	void App::CreateCommandBuffers()
@@ -149,11 +172,11 @@ namespace vke
 
 		if (m_SwapChain == nullptr)
 		{
-			m_SwapChain = std::make_unique<VkeSwapChain>(m_Device, extent);
+			m_SwapChain = std::make_unique<GraphicsSwapChain>(m_Device, extent);
 		}
 		else
 		{
-			m_SwapChain = std::make_unique<VkeSwapChain>(m_Device, extent, std::move(m_SwapChain));
+			m_SwapChain = std::make_unique<GraphicsSwapChain>(m_Device, extent, std::move(m_SwapChain));
 
 			if (m_SwapChain->ImageCount() != m_CommandBuffers.size())
 			{
@@ -203,23 +226,37 @@ namespace vke
 		vkCmdSetViewport(m_CommandBuffers[imageIndex], 0, 1, &viewport);
 		vkCmdSetScissor(m_CommandBuffers[imageIndex], 0, 1, &scissor);
 
-		m_Pipeline->Bind(m_CommandBuffers[imageIndex]);
-		m_Model->Bind(m_CommandBuffers[imageIndex]);
-
-		for (int j = 0; j < 4; ++j)
-		{
-			PushConstantData push{};
-			push.offset = { 0.0f, -0.4f + j * 0.25f };
-			push.color = { 0.0f, 0.0f, 0.2f + 0.2f * j };
-
-			vkCmdPushConstants(m_CommandBuffers[imageIndex], m_PipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(PushConstantData), &push);
-			m_Model->Draw(m_CommandBuffers[imageIndex]);
-		}
+		RenderGameObjects(m_CommandBuffers[imageIndex]);
 
 		vkCmdEndRenderPass(m_CommandBuffers[imageIndex]);
 		if (vkEndCommandBuffer(m_CommandBuffers[imageIndex]) != VK_SUCCESS)
 		{
 			FATAL_LOG("Failed to record Command Buffer!");
+		}
+	}
+
+	void App::RenderGameObjects(VkCommandBuffer commandBuffer)
+	{
+		// update
+		int i = 0;
+		for (auto& obj : m_GameObjects) 
+		{
+			i += 1;
+			obj.transform.rotation = glm::mod<float>(obj.transform.rotation + 0.0005f * i, 2.f * glm::pi<float>());
+		}
+
+		m_Pipeline->Bind(commandBuffer);
+
+		for (auto& obj : m_GameObjects)
+		{
+			PushConstantData push{};
+			push.offset = obj.transform.translation;
+			push.color = obj.color;
+			push.transform = obj.transform.mat2();
+
+			vkCmdPushConstants(commandBuffer, m_PipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(PushConstantData), &push);
+			obj.model->Bind(commandBuffer);
+			obj.model->Draw(commandBuffer);
 		}
 	}
 }

@@ -4,7 +4,7 @@
 
 namespace vke
 {
-	VkeSwapChain::VkeSwapChain(VkeDevice& device, VkExtent2D windowExtent) :
+	GraphicsSwapChain::GraphicsSwapChain(GraphicsDevice& device, VkExtent2D windowExtent) :
 		m_Device(device),
 		m_WindowExtent(windowExtent),
 		m_CurrentFrame(0),
@@ -16,7 +16,7 @@ namespace vke
 		Init();
 	}
 
-	VkeSwapChain::VkeSwapChain(VkeDevice& device, VkExtent2D windowExtent, std::shared_ptr<VkeSwapChain> previous) :
+	GraphicsSwapChain::GraphicsSwapChain(GraphicsDevice& device, VkExtent2D windowExtent, std::shared_ptr<GraphicsSwapChain> previous) :
 		m_Device(device),
 		m_WindowExtent(windowExtent),
 		m_CurrentFrame(0),
@@ -31,7 +31,7 @@ namespace vke
 		m_OldSwapChain = nullptr;
 	}
 
-	VkeSwapChain::~VkeSwapChain()
+	GraphicsSwapChain::~GraphicsSwapChain()
 	{
 		for (auto imageView : m_SwapChainImageViews)
 		{
@@ -67,12 +67,12 @@ namespace vke
 		}
 	}
 
-	VkFormat VkeSwapChain::FindDepthFormat()
+	VkFormat GraphicsSwapChain::FindDepthFormat()
 	{
 		return m_Device.FindSupportedFormat({ VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT }, VK_IMAGE_TILING_OPTIMAL, VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
 	}
 
-	VkResult VkeSwapChain::AcquireNextImage(uint32_t* imageIndex)
+	VkResult GraphicsSwapChain::AcquireNextImage(uint32_t* imageIndex)
 	{
 		vkWaitForFences(m_Device.Device(), 1, &m_InFlightFences[m_CurrentFrame], VK_TRUE, std::numeric_limits<uint64_t>::max());
 
@@ -81,7 +81,7 @@ namespace vke
 		return result;
 	}
 
-	VkResult VkeSwapChain::SubmitCommandBuffers(const VkCommandBuffer* buffers, uint32_t* imageIndex)
+	VkResult GraphicsSwapChain::SubmitCommandBuffers(const VkCommandBuffer* buffers, uint32_t* imageIndex)
 	{
 		if (m_ImagesInFlight[*imageIndex] != VK_NULL_HANDLE)
 		{
@@ -127,7 +127,7 @@ namespace vke
 		return result;
 	}
 
-	void VkeSwapChain::Init()
+	void GraphicsSwapChain::Init()
 	{
 		CreateSwapChain();
 		CreateImageViews();
@@ -137,7 +137,7 @@ namespace vke
 		CreateSyncObjects();
 	}
 
-	void VkeSwapChain::CreateSwapChain()
+	void GraphicsSwapChain::CreateSwapChain()
 	{
 		SwapChainSupportDetails swapChainSupport = m_Device.GetSwapChainSupport();
 
@@ -203,7 +203,7 @@ namespace vke
 		m_SwapChainExtent = extent;
 	}
 
-	void VkeSwapChain::CreateImageViews()
+	void GraphicsSwapChain::CreateImageViews()
 	{
 		m_SwapChainImageViews.resize(m_SwapChainImages.size());
 		for (size_t i = 0; i < m_SwapChainImages.size(); ++i)
@@ -226,7 +226,7 @@ namespace vke
 		}
 	}
 
-	void VkeSwapChain::CreateDepthResources()
+	void GraphicsSwapChain::CreateDepthResources()
 	{
 		VkFormat depthFormat = FindDepthFormat();
 		VkExtent2D swapChainExtent = GetSwapChainExtent();
@@ -273,7 +273,7 @@ namespace vke
 		}
 	}
 
-	void VkeSwapChain::CreateRenderPass()
+	void GraphicsSwapChain::CreateRenderPass()
 	{
 		VkAttachmentDescription depthAttachment{};
 		depthAttachment.format = FindDepthFormat();
@@ -333,7 +333,7 @@ namespace vke
 		}
 	}
 
-	void VkeSwapChain::CreateFramebuffers()
+	void GraphicsSwapChain::CreateFramebuffers()
 	{
 		m_SwapChainFramebuffers.resize(ImageCount());
 		for (size_t i = 0; i < ImageCount(); i++)
@@ -357,7 +357,7 @@ namespace vke
 		}
 	}
 
-	void VkeSwapChain::CreateSyncObjects()
+	void GraphicsSwapChain::CreateSyncObjects()
 	{
 		m_ImageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
 		m_RenderFinishedSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
@@ -382,7 +382,7 @@ namespace vke
 		}
 	}
 
-	VkSurfaceFormatKHR VkeSwapChain::ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats)
+	VkSurfaceFormatKHR GraphicsSwapChain::ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats)
 	{
 		for (const auto& availableFormat : availableFormats)
 		{
@@ -395,14 +395,14 @@ namespace vke
 		return availableFormats[0];
 	}
 
-	VkPresentModeKHR VkeSwapChain::ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes)
+	VkPresentModeKHR GraphicsSwapChain::ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes)
 	{
 		for (const auto& availablePresentMode : availablePresentModes)
 		{
 			if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR)
 			{
 				INFO_LOG("Present mode: Mailbox");
-				return availablePresentMode;
+				//return availablePresentMode;
 			}
 		}
 
@@ -411,7 +411,7 @@ namespace vke
 			if (availablePresentMode == VK_PRESENT_MODE_IMMEDIATE_KHR)
 			{
 				INFO_LOG("Present mode: Immediate");
-				return availablePresentMode;
+				//return availablePresentMode;
 			}
 		}
 
@@ -419,7 +419,7 @@ namespace vke
 		return VK_PRESENT_MODE_FIFO_KHR;
 	}
 
-	VkExtent2D VkeSwapChain::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities)
+	VkExtent2D GraphicsSwapChain::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities)
 	{
 		if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max())
 		{

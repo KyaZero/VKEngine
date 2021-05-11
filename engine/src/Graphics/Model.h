@@ -10,7 +10,7 @@
 
 namespace vke
 {
-	class VkeModel
+	class Model
 	{
 	public:
 		struct Vertex
@@ -22,11 +22,11 @@ namespace vke
 			static std::vector<VkVertexInputAttributeDescription> GetAttributeDescriptions();
 		};
 
-		VkeModel(VkeDevice& device, const std::vector<Vertex>& vertices);
-		~VkeModel();
+		Model(GraphicsDevice& device, const std::vector<Vertex>& vertices);
+		~Model();
 
-		VkeModel(const VkeModel&) = delete;
-		VkeModel& operator=(const VkeModel&) = delete;
+		Model(const Model&) = delete;
+		Model& operator=(const Model&) = delete;
 
 		void Bind(VkCommandBuffer commandBuffer);
 		void Draw(VkCommandBuffer commandBuffer);
@@ -34,7 +34,7 @@ namespace vke
 	private:
 		void CreateVertexBuffers(const std::vector<Vertex>& vertices);
 
-		VkeDevice& m_Device;
+		GraphicsDevice& m_Device;
 		VkBuffer m_VertexBuffer;
 		VkDeviceMemory m_VertexBufferMemory;
 		uint32_t m_VertexCount;

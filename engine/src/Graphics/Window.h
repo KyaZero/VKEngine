@@ -8,14 +8,14 @@
 
 namespace vke
 {
-	class VkeWindow
+	class Window
 	{
 	public:
-		VkeWindow(int w, int h, std::string name);
-		~VkeWindow();
+		Window(int w, int h, std::string name);
+		~Window();
 
-		VkeWindow(const VkeWindow&) = delete;
-		VkeWindow& operator=(const VkeWindow&) = delete;
+		Window(const Window&) = delete;
+		Window& operator=(const Window&) = delete;
 
 		bool ShouldClose() { return glfwWindowShouldClose(m_Window); }
 		bool WasWindowResized() { return m_FramebufferResized; }

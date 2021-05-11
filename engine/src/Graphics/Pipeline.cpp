@@ -4,19 +4,19 @@
 
 namespace vke
 {
-	VkePipeline::VkePipeline(VkeDevice& device, const std::string& vertPath, const std::string& fragPath, const PipelineConfigInfo& configInfo) : m_Device(device)
+	GraphicsPipeline::GraphicsPipeline(GraphicsDevice& device, const std::string& vertPath, const std::string& fragPath, const PipelineConfigInfo& configInfo) : m_Device(device)
 	{
 		CreateGraphicsPipeline(vertPath, fragPath, configInfo);
 	}
 
-	VkePipeline::~VkePipeline()
+	GraphicsPipeline::~GraphicsPipeline()
 	{
 		vkDestroyShaderModule(m_Device.Device(), m_VertShaderModule, nullptr);
 		vkDestroyShaderModule(m_Device.Device(), m_FragShaderModule, nullptr);
 		vkDestroyPipeline(m_Device.Device(), m_GraphicsPipeline, nullptr);
 	}
 
-	std::vector<char> VkePipeline::ReadFile(const std::string& filepath)
+	std::vector<char> GraphicsPipeline::ReadFile(const std::string& filepath)
 	{
 		std::ifstream file(filepath, std::ios::ate | std::ios::binary);
 
@@ -35,7 +35,7 @@ namespace vke
 		return buffer;
 	}
 
-	void VkePipeline::CreateGraphicsPipeline(const std::string& vertPath, const std::string& fragPath, const PipelineConfigInfo& configInfo)
+	void GraphicsPipeline::CreateGraphicsPipeline(const std::string& vertPath, const std::string& fragPath, const PipelineConfigInfo& configInfo)
 	{
 		ASSERT_LOG(configInfo.pipelineLayout != VK_NULL_HANDLE, "Cannot create Graphics Pipeline: No pipelineLayout provided in configInfo");
 		ASSERT_LOG(configInfo.renderPass != VK_NULL_HANDLE, "Cannot create Graphics Pipeline: No renderPass provided in configInfo");
@@ -63,8 +63,8 @@ namespace vke
 		shaderStages[1].pNext = nullptr;
 		shaderStages[1].pSpecializationInfo = nullptr;
 
-		auto attributeDescriptions = VkeModel::Vertex::GetAttributeDescriptions();
-		auto bindingDescriptions = VkeModel::Vertex::GetBindingDescriptions();
+		auto attributeDescriptions = Model::Vertex::GetAttributeDescriptions();
+		auto bindingDescriptions = Model::Vertex::GetBindingDescriptions();
 
 		VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
 		vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
@@ -99,7 +99,7 @@ namespace vke
 		}
 	}
 
-	void VkePipeline::CreateShaderModule(const std::vector<char>& code, VkShaderModule* shaderModule)
+	void GraphicsPipeline::CreateShaderModule(const std::vector<char>& code, VkShaderModule* shaderModule)
 	{
 		VkShaderModuleCreateInfo createInfo{};
 		createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
@@ -112,12 +112,12 @@ namespace vke
 		}
 	}
 
-	void VkePipeline::Bind(VkCommandBuffer commandBuffer)
+	void GraphicsPipeline::Bind(VkCommandBuffer commandBuffer)
 	{
 		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_GraphicsPipeline);
 	}
 
-	void VkePipeline::DefaultPipelineConfigInfo(PipelineConfigInfo& configInfo)
+	void GraphicsPipeline::DefaultPipelineConfigInfo(PipelineConfigInfo& configInfo)
 	{
 		configInfo.inputAssemblyInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
 		configInfo.inputAssemblyInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;

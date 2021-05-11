@@ -44,7 +44,7 @@ namespace vke
 		}
 	}
 
-	VkeDevice::VkeDevice(VkeWindow& window) : m_Window(window)
+	GraphicsDevice::GraphicsDevice(Window& window) : m_Window(window)
 	{
 		CreateInstance();
 		SetupDebugMessenger();
@@ -54,7 +54,7 @@ namespace vke
 		CreateCommandPool();
 	}
 
-	VkeDevice::~VkeDevice()
+	GraphicsDevice::~GraphicsDevice()
 	{
 		vkDestroyCommandPool(m_Device, m_CommandPool, nullptr);
 		vkDestroyDevice(m_Device, nullptr);
@@ -68,7 +68,7 @@ namespace vke
 		vkDestroyInstance(m_Instance, nullptr);
 	}
 
-	void VkeDevice::CreateInstance()
+	void GraphicsDevice::CreateInstance()
 	{
 		if (EnableValidationLayers && !CheckValidationLayerSupport())
 		{
@@ -113,7 +113,7 @@ namespace vke
 		HasGflwRequiredInstanceExtensions();
 	}
 
-	void VkeDevice::PickPhysicalDevice()
+	void GraphicsDevice::PickPhysicalDevice()
 	{
 		uint32_t deviceCount = 0;
 		vkEnumeratePhysicalDevices(m_Instance, &deviceCount, nullptr);
@@ -141,7 +141,7 @@ namespace vke
 		INFO_LOG("Physical Device: %s", m_Properties.deviceName);
 	}
 
-	void VkeDevice::CreateLogicalDevice()
+	void GraphicsDevice::CreateLogicalDevice()
 	{
 		QueueFamilyIndices indices = FindQueueFamilies(m_PhysicalDevice);
 
@@ -193,7 +193,7 @@ namespace vke
 		vkGetDeviceQueue(m_Device, indices.presentFamily, 0, &m_PresentQueue);
 	}
 
-	void VkeDevice::CreateCommandPool()
+	void GraphicsDevice::CreateCommandPool()
 	{
 		QueueFamilyIndices queueFamilyIndices = FindPhysicalQueueFamilies();
 
@@ -209,12 +209,12 @@ namespace vke
 		}
 	}
 
-	void VkeDevice::CreateSurface()
+	void GraphicsDevice::CreateSurface()
 	{
 		m_Window.CreateWindowSurface(m_Instance, &m_Surface);
 	}
 
-	bool VkeDevice::IsDeviceSuitable(VkPhysicalDevice device)
+	bool GraphicsDevice::IsDeviceSuitable(VkPhysicalDevice device)
 	{
 		QueueFamilyIndices indices = FindQueueFamilies(device);
 
@@ -234,7 +234,7 @@ namespace vke
 			supportedFeatures.samplerAnisotropy;
 	}
 
-	void VkeDevice::PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo)
+	void GraphicsDevice::PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo)
 	{
 		createInfo = {};
 		createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
@@ -244,7 +244,7 @@ namespace vke
 		createInfo.pUserData = nullptr;  // Optional
 	}
 
-	void VkeDevice::SetupDebugMessenger()
+	void GraphicsDevice::SetupDebugMessenger()
 	{
 		if (!EnableValidationLayers)
 			return;
@@ -256,7 +256,7 @@ namespace vke
 		}
 	}
 
-	bool VkeDevice::CheckValidationLayerSupport()
+	bool GraphicsDevice::CheckValidationLayerSupport()
 	{
 		uint32_t layerCount;
 		vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
@@ -284,7 +284,7 @@ namespace vke
 		return true;
 	}
 
-	std::vector<const char*> VkeDevice::GetRequiredExtensions()
+	std::vector<const char*> GraphicsDevice::GetRequiredExtensions()
 	{
 		uint32_t glfwExtensionCount = 0;
 		const char** glfwExtensions;
@@ -298,7 +298,7 @@ namespace vke
 		return extensions;
 	}
 
-	void VkeDevice::HasGflwRequiredInstanceExtensions()
+	void GraphicsDevice::HasGflwRequiredInstanceExtensions()
 	{
 		uint32_t extensionCount = 0;
 		vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
@@ -325,7 +325,7 @@ namespace vke
 		}
 	}
 
-	bool VkeDevice::CheckDeviceExtensionSupport(VkPhysicalDevice device)
+	bool GraphicsDevice::CheckDeviceExtensionSupport(VkPhysicalDevice device)
 	{
 		uint32_t extensionCount;
 		vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
@@ -343,7 +343,7 @@ namespace vke
 		return requiredExtensions.empty();
 	}
 
-	QueueFamilyIndices VkeDevice::FindQueueFamilies(VkPhysicalDevice device)
+	QueueFamilyIndices GraphicsDevice::FindQueueFamilies(VkPhysicalDevice device)
 	{
 		QueueFamilyIndices indices;
 
@@ -379,7 +379,7 @@ namespace vke
 		return indices;
 	}
 
-	SwapChainSupportDetails VkeDevice::QuerySwapChainSupport(VkPhysicalDevice device)
+	SwapChainSupportDetails GraphicsDevice::QuerySwapChainSupport(VkPhysicalDevice device)
 	{
 		SwapChainSupportDetails details;
 		vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, m_Surface, &details.capabilities);
@@ -408,7 +408,7 @@ namespace vke
 		return details;
 	}
 
-	VkFormat VkeDevice::FindSupportedFormat(
+	VkFormat GraphicsDevice::FindSupportedFormat(
 		const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features)
 	{
 		for (VkFormat format : candidates) {
@@ -428,7 +428,7 @@ namespace vke
 		FATAL_LOG("Failed to find supported format!");
 	}
 
-	uint32_t VkeDevice::FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties)
+	uint32_t GraphicsDevice::FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties)
 	{
 		VkPhysicalDeviceMemoryProperties memProperties;
 		vkGetPhysicalDeviceMemoryProperties(m_PhysicalDevice, &memProperties);
@@ -443,7 +443,7 @@ namespace vke
 		FATAL_LOG("Failed to find suitable memory type!");
 	}
 
-	void VkeDevice::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory)
+	void GraphicsDevice::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory)
 	{
 		VkBufferCreateInfo bufferInfo{};
 		bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
@@ -472,7 +472,7 @@ namespace vke
 		vkBindBufferMemory(m_Device, buffer, bufferMemory, 0);
 	}
 
-	VkCommandBuffer VkeDevice::BeginSingleTimeCommands()
+	VkCommandBuffer GraphicsDevice::BeginSingleTimeCommands()
 	{
 		VkCommandBufferAllocateInfo allocInfo{};
 		allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -491,7 +491,7 @@ namespace vke
 		return commandBuffer;
 	}
 
-	void VkeDevice::EndSingleTimeCommands(VkCommandBuffer commandBuffer)
+	void GraphicsDevice::EndSingleTimeCommands(VkCommandBuffer commandBuffer)
 	{
 		vkEndCommandBuffer(commandBuffer);
 
@@ -506,7 +506,7 @@ namespace vke
 		vkFreeCommandBuffers(m_Device, m_CommandPool, 1, &commandBuffer);
 	}
 
-	void VkeDevice::CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size)
+	void GraphicsDevice::CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size)
 	{
 		VkCommandBuffer commandBuffer = BeginSingleTimeCommands();
 
@@ -519,7 +519,7 @@ namespace vke
 		EndSingleTimeCommands(commandBuffer);
 	}
 
-	void VkeDevice::CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height, uint32_t layerCount)
+	void GraphicsDevice::CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height, uint32_t layerCount)
 	{
 		VkCommandBuffer commandBuffer = BeginSingleTimeCommands();
 
@@ -540,7 +540,7 @@ namespace vke
 		EndSingleTimeCommands(commandBuffer);
 	}
 
-	void VkeDevice::CreateImageWithInfo(const VkImageCreateInfo& imageInfo, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory)
+	void GraphicsDevice::CreateImageWithInfo(const VkImageCreateInfo& imageInfo, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory)
 	{
 		if (vkCreateImage(m_Device, &imageInfo, nullptr, &image) != VK_SUCCESS)
 		{

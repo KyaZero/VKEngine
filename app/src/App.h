@@ -4,6 +4,7 @@
 #include "Graphics/SwapChain.h"
 #include "Graphics/Pipeline.h"
 #include "Graphics/Model.h"
+#include "GameObject.h"
 
 #include <memory>
 #include <vector>
@@ -25,7 +26,7 @@ namespace vke
 		static constexpr i32 HEIGHT = 600;
 
 	private:
-		void LoadModels();
+		void LoadGameObjects();
 		void CreatePipelineLayout();
 		void CreatePipeline();
 		void CreateCommandBuffers();
@@ -33,13 +34,14 @@ namespace vke
 		void DrawFrame();
 		void RecreateSwapChain();
 		void RecordCommandBuffer(int imageIndex);
+		void RenderGameObjects(VkCommandBuffer commandBuffer);
 
-		VkeWindow m_Window;
-		VkeDevice m_Device;
-		std::unique_ptr<VkeSwapChain> m_SwapChain;
-		std::unique_ptr<VkePipeline> m_Pipeline;
+		Window m_Window;
+		GraphicsDevice m_Device;
+		std::unique_ptr<GraphicsSwapChain> m_SwapChain;
+		std::unique_ptr<GraphicsPipeline> m_Pipeline;
 		VkPipelineLayout m_PipelineLayout;
 		std::vector<VkCommandBuffer> m_CommandBuffers;
-		std::unique_ptr<VkeModel> m_Model;
+		std::vector<GameObject> m_GameObjects;
 	};
 }

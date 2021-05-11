@@ -1,17 +1,17 @@
 #include "Model.h"
 
-vke::VkeModel::VkeModel(VkeDevice& device, const std::vector<Vertex>& vertices) : m_Device(device)
+vke::Model::Model(GraphicsDevice& device, const std::vector<Vertex>& vertices) : m_Device(device)
 {
 	CreateVertexBuffers(vertices);
 }
 
-vke::VkeModel::~VkeModel()
+vke::Model::~Model()
 {
 	vkDestroyBuffer(m_Device.Device(), m_VertexBuffer, nullptr);
 	vkFreeMemory(m_Device.Device(), m_VertexBufferMemory, nullptr);
 }
 
-void vke::VkeModel::Bind(VkCommandBuffer commandBuffer)
+void vke::Model::Bind(VkCommandBuffer commandBuffer)
 {
 	VkBuffer buffers[] = { m_VertexBuffer };
 	VkDeviceSize offsets[] = { 0 };
@@ -19,12 +19,12 @@ void vke::VkeModel::Bind(VkCommandBuffer commandBuffer)
 	vkCmdBindVertexBuffers(commandBuffer, 0, 1, buffers, offsets);
 }
 
-void vke::VkeModel::Draw(VkCommandBuffer commandBuffer)
+void vke::Model::Draw(VkCommandBuffer commandBuffer)
 {
 	vkCmdDraw(commandBuffer, m_VertexCount, 1, 0, 0);
 }
 
-void vke::VkeModel::CreateVertexBuffers(const std::vector<Vertex>& vertices)
+void vke::Model::CreateVertexBuffers(const std::vector<Vertex>& vertices)
 {
 	m_VertexCount = static_cast<uint32_t>(vertices.size());
 	ASSERT_LOG(m_VertexCount >= 3, "Vertex count must be at least 3!");
@@ -38,7 +38,7 @@ void vke::VkeModel::CreateVertexBuffers(const std::vector<Vertex>& vertices)
 	vkUnmapMemory(m_Device.Device(), m_VertexBufferMemory);
 }
 
-std::vector<VkVertexInputBindingDescription> vke::VkeModel::Vertex::GetBindingDescriptions()
+std::vector<VkVertexInputBindingDescription> vke::Model::Vertex::GetBindingDescriptions()
 {
 	std::vector<VkVertexInputBindingDescription> bindingDescriptions(1);
 	bindingDescriptions[0].binding = 0;
@@ -47,7 +47,7 @@ std::vector<VkVertexInputBindingDescription> vke::VkeModel::Vertex::GetBindingDe
 	return bindingDescriptions;
 }
 
-std::vector<VkVertexInputAttributeDescription> vke::VkeModel::Vertex::GetAttributeDescriptions()
+std::vector<VkVertexInputAttributeDescription> vke::Model::Vertex::GetAttributeDescriptions()
 {
 	std::vector<VkVertexInputAttributeDescription> attributeDescriptions(2);
 	attributeDescriptions[0].binding = 0;

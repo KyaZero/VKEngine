@@ -17,7 +17,11 @@ set(graphics_files
     "src/Graphics/Window.h"
     "src/Graphics/Window.cpp")
 
+set(src_files
+    "src/GameObject.h")
+
 set(all_files
+    ${src_files}
     ${core_files}
     ${graphics_files})
 

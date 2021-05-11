@@ -3,18 +3,18 @@
 
 namespace vke
 {
-	VkeWindow::VkeWindow(int w, int h, std::string name) : m_Width(w), m_Height(h), m_WindowName(name), m_Window(nullptr), m_FramebufferResized(false)
+	Window::Window(int w, int h, std::string name) : m_Width(w), m_Height(h), m_WindowName(name), m_Window(nullptr), m_FramebufferResized(false)
 	{
 		InitWindow();
 	}
 
-	VkeWindow::~VkeWindow()
+	Window::~Window()
 	{
 		glfwDestroyWindow(m_Window);
 		glfwTerminate();
 	}
 
-	void VkeWindow::CreateWindowSurface(VkInstance instance, VkSurfaceKHR* surface)
+	void Window::CreateWindowSurface(VkInstance instance, VkSurfaceKHR* surface)
 	{
 		if (glfwCreateWindowSurface(instance, m_Window, nullptr, surface) != VK_SUCCESS)
 		{
@@ -22,15 +22,15 @@ namespace vke
 		}
 	}
 
-	void VkeWindow::FramebufferResizeCallback(GLFWwindow* window, int width, int height)
+	void Window::FramebufferResizeCallback(GLFWwindow* window, int width, int height)
 	{
-		auto* vkeWindow = reinterpret_cast<VkeWindow*>(glfwGetWindowUserPointer(window));
+		auto* vkeWindow = reinterpret_cast<Window*>(glfwGetWindowUserPointer(window));
 		vkeWindow->m_FramebufferResized = true;
 		vkeWindow->m_Width = width;
 		vkeWindow->m_Height = height;
 	}
 
-	void VkeWindow::InitWindow()
+	void Window::InitWindow()
 	{
 		glfwInit();
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
