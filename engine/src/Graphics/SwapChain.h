@@ -8,17 +8,17 @@
 
 namespace vke
 {
-	class GraphicsSwapChain
+	class SwapChain
 	{
 	public:
 		static constexpr int MAX_FRAMES_IN_FLIGHT = 2;
 
-		GraphicsSwapChain(GraphicsDevice& device, VkExtent2D windowExtent);
-		GraphicsSwapChain(GraphicsDevice& device, VkExtent2D windowExtent, std::shared_ptr<GraphicsSwapChain> previous);
-		~GraphicsSwapChain();
+		SwapChain(Device& device, VkExtent2D windowExtent);
+		SwapChain(Device& device, VkExtent2D windowExtent, std::shared_ptr<SwapChain> previous);
+		~SwapChain();
 
-		GraphicsSwapChain(const GraphicsSwapChain&) = delete;
-		GraphicsSwapChain& operator=(const GraphicsSwapChain&) = delete;
+		SwapChain(const SwapChain&) = delete;
+		SwapChain& operator=(const SwapChain&) = delete;
 
 		VkFramebuffer GetFrameBuffer(int index) { return m_SwapChainFramebuffers[index]; }
 		VkRenderPass GetRenderPass() { return m_RenderPass; }
@@ -35,6 +35,11 @@ namespace vke
 		VkResult AcquireNextImage(uint32_t* imageIndex);
 		VkResult SubmitCommandBuffers(const VkCommandBuffer* buffers, uint32_t* imageIndex);
 
+		bool CompareSwapFormats(const SwapChain& swapChain) const
+		{
+			return swapChain.m_SwapChainDepthFormat == m_SwapChainDepthFormat && swapChain.m_SwapChainImageFormat == m_SwapChainImageFormat;
+		}
+
 	private:
 		void Init();
 		void CreateSwapChain();
@@ -49,6 +54,7 @@ namespace vke
 		VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
 
 		VkFormat m_SwapChainImageFormat;
+		VkFormat m_SwapChainDepthFormat;
 		VkExtent2D m_SwapChainExtent;
 
 		std::vector<VkFramebuffer> m_SwapChainFramebuffers;
@@ -61,11 +67,11 @@ namespace vke
 		std::vector<VkImage> m_SwapChainImages;
 		std::vector<VkImageView> m_SwapChainImageViews;
 
-		GraphicsDevice& m_Device;
+		Device& m_Device;
 		VkExtent2D m_WindowExtent;
 
 		VkSwapchainKHR m_SwapChain;
-		std::shared_ptr<GraphicsSwapChain> m_OldSwapChain;
+		std::shared_ptr<SwapChain> m_OldSwapChain;
 
 		std::vector<VkSemaphore> m_ImageAvailableSemaphores;
 		std::vector<VkSemaphore> m_RenderFinishedSemaphores;

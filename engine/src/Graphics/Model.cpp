@@ -1,14 +1,14 @@
 #include "Model.h"
 
-vke::Model::Model(GraphicsDevice& device, const std::vector<Vertex>& vertices) : m_Device(device)
+vke::Model::Model(Device& device, const std::vector<Vertex>& vertices) : m_Device(device)
 {
 	CreateVertexBuffers(vertices);
 }
 
 vke::Model::~Model()
 {
-	vkDestroyBuffer(m_Device.Device(), m_VertexBuffer, nullptr);
-	vkFreeMemory(m_Device.Device(), m_VertexBufferMemory, nullptr);
+	vkDestroyBuffer(m_Device.GetDevice(), m_VertexBuffer, nullptr);
+	vkFreeMemory(m_Device.GetDevice(), m_VertexBufferMemory, nullptr);
 }
 
 void vke::Model::Bind(VkCommandBuffer commandBuffer)
@@ -33,9 +33,9 @@ void vke::Model::CreateVertexBuffers(const std::vector<Vertex>& vertices)
 	m_Device.CreateBuffer(bufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, m_VertexBuffer, m_VertexBufferMemory);
 
 	void* data;
-	vkMapMemory(m_Device.Device(), m_VertexBufferMemory, 0, bufferSize, 0, &data);
+	vkMapMemory(m_Device.GetDevice(), m_VertexBufferMemory, 0, bufferSize, 0, &data);
 	memcpy(data, vertices.data(), static_cast<size_t>(bufferSize));
-	vkUnmapMemory(m_Device.Device(), m_VertexBufferMemory);
+	vkUnmapMemory(m_Device.GetDevice(), m_VertexBufferMemory);
 }
 
 std::vector<VkVertexInputBindingDescription> vke::Model::Vertex::GetBindingDescriptions()

@@ -19,7 +19,7 @@ namespace vke {
         bool IsComplete() { return graphicsFamilyHasValue && presentFamilyHasValue; }
     };
 
-    class GraphicsDevice {
+    class Device {
     public:
 #ifdef NDEBUG
         const bool EnableValidationLayers = false;
@@ -27,17 +27,17 @@ namespace vke {
         const bool EnableValidationLayers = true;
 #endif
 
-        GraphicsDevice(Window& window);
-        ~GraphicsDevice();
+        Device(Window& window);
+        ~Device();
 
         // Not copyable or movable
-        GraphicsDevice(const GraphicsDevice&) = delete;
-        GraphicsDevice& operator=(const GraphicsDevice&) = delete;
-        GraphicsDevice(GraphicsDevice&&) = delete;
-        GraphicsDevice& operator=(GraphicsDevice&&) = delete;
+       Device(const Device&) = delete;
+       Device& operator=(const Device&) = delete;
+       Device(Device&&) = delete;
+       Device& operator=(Device&&) = delete;
 
         VkCommandPool GetCommandPool() { return m_CommandPool; }
-        VkDevice Device() { return m_Device; }
+        VkDevice GetDevice() { return m_Device; }
         VkSurfaceKHR Surface() { return m_Surface; }
         VkQueue GraphicsQueue() { return m_GraphicsQueue; }
         VkQueue PresentQueue() { return m_PresentQueue; }

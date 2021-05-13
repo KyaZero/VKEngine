@@ -22,7 +22,7 @@ namespace vke
 			static std::vector<VkVertexInputAttributeDescription> GetAttributeDescriptions();
 		};
 
-		Model(GraphicsDevice& device, const std::vector<Vertex>& vertices);
+		Model(Device& device, const std::vector<Vertex>& vertices);
 		~Model();
 
 		Model(const Model&) = delete;
@@ -34,7 +34,7 @@ namespace vke
 	private:
 		void CreateVertexBuffers(const std::vector<Vertex>& vertices);
 
-		GraphicsDevice& m_Device;
+		Device& m_Device;
 		VkBuffer m_VertexBuffer;
 		VkDeviceMemory m_VertexBufferMemory;
 		uint32_t m_VertexCount;

@@ -1,8 +1,7 @@
 #pragma once
 #include "Graphics/Window.h"
 #include "Graphics/Device.h"
-#include "Graphics/SwapChain.h"
-#include "Graphics/Pipeline.h"
+#include "Graphics/Renderer.h"
 #include "Graphics/Model.h"
 #include "GameObject.h"
 
@@ -27,21 +26,11 @@ namespace vke
 
 	private:
 		void LoadGameObjects();
-		void CreatePipelineLayout();
-		void CreatePipeline();
-		void CreateCommandBuffers();
-		void FreeCommandBuffers();
-		void DrawFrame();
-		void RecreateSwapChain();
-		void RecordCommandBuffer(int imageIndex);
-		void RenderGameObjects(VkCommandBuffer commandBuffer);
 
 		Window m_Window;
-		GraphicsDevice m_Device;
-		std::unique_ptr<GraphicsSwapChain> m_SwapChain;
-		std::unique_ptr<GraphicsPipeline> m_Pipeline;
-		VkPipelineLayout m_PipelineLayout;
-		std::vector<VkCommandBuffer> m_CommandBuffers;
+		Device m_Device;
+		Renderer m_Renderer;
+
 		std::vector<GameObject> m_GameObjects;
 	};
 }

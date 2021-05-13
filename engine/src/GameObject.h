@@ -5,6 +5,12 @@
 
 namespace vke
 {
+	struct RigidBody2DComponent 
+	{
+	   glm::vec2 velocity;
+	   float mass{1.0f};
+	};
+
 	struct Transform2DComponent
 	{
 		glm::vec2 translation{};
@@ -44,6 +50,7 @@ namespace vke
 		glm::vec3 color;
 
 		Transform2DComponent transform;
+		RigidBody2DComponent rigidBody;
 
 	private:
 		GameObject(id_t objId) : m_Id(objId), model(), color() {}

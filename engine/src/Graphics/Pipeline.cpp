@@ -4,19 +4,19 @@
 
 namespace vke
 {
-	GraphicsPipeline::GraphicsPipeline(GraphicsDevice& device, const std::string& vertPath, const std::string& fragPath, const PipelineConfigInfo& configInfo) : m_Device(device)
+	Pipeline::Pipeline(Device& device, const std::string& vertPath, const std::string& fragPath, const PipelineConfigInfo& configInfo) : m_Device(device)
 	{
 		CreateGraphicsPipeline(vertPath, fragPath, configInfo);
 	}
 
-	GraphicsPipeline::~GraphicsPipeline()
+	Pipeline::~Pipeline()
 	{
-		vkDestroyShaderModule(m_Device.Device(), m_VertShaderModule, nullptr);
-		vkDestroyShaderModule(m_Device.Device(), m_FragShaderModule, nullptr);
-		vkDestroyPipeline(m_Device.Device(), m_GraphicsPipeline, nullptr);
+		vkDestroyShaderModule(m_Device.GetDevice(), m_VertShaderModule, nullptr);
+		vkDestroyShaderModule(m_Device.GetDevice(), m_FragShaderModule, nullptr);
+		vkDestroyPipeline(m_Device.GetDevice(), m_GraphicsPipeline, nullptr);
 	}
 
-	std::vector<char> GraphicsPipeline::ReadFile(const std::string& filepath)
+	std::vector<char> Pipeline::ReadFile(const std::string& filepath)
 	{
 		std::ifstream file(filepath, std::ios::ate | std::ios::binary);
 
@@ -35,7 +35,7 @@ namespace vke
 		return buffer;
 	}
 
-	void GraphicsPipeline::CreateGraphicsPipeline(const std::string& vertPath, const std::string& fragPath, const PipelineConfigInfo& configInfo)
+	void Pipeline::CreateGraphicsPipeline(const std::string& vertPath, const std::string& fragPath, const PipelineConfigInfo& configInfo)
 	{
 		ASSERT_LOG(configInfo.pipelineLayout != VK_NULL_HANDLE, "Cannot create Graphics Pipeline: No pipelineLayout provided in configInfo");
 		ASSERT_LOG(configInfo.renderPass != VK_NULL_HANDLE, "Cannot create Graphics Pipeline: No renderPass provided in configInfo");
@@ -93,31 +93,31 @@ namespace vke
 		pipelineInfo.basePipelineIndex = -1;
 		pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 
-		if (vkCreateGraphicsPipelines(m_Device.Device(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &m_GraphicsPipeline) != VK_SUCCESS)
+		if (vkCreateGraphicsPipelines(m_Device.GetDevice(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &m_GraphicsPipeline) != VK_SUCCESS)
 		{
 			FATAL_LOG("Failed to create Graphics Pipeline");
 		}
 	}
 
-	void GraphicsPipeline::CreateShaderModule(const std::vector<char>& code, VkShaderModule* shaderModule)
+	void Pipeline::CreateShaderModule(const std::vector<char>& code, VkShaderModule* shaderModule)
 	{
 		VkShaderModuleCreateInfo createInfo{};
 		createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
 		createInfo.codeSize = code.size();
 		createInfo.pCode = (const u32*)code.data();
 
-		if (vkCreateShaderModule(m_Device.Device(), &createInfo, nullptr, shaderModule) != VK_SUCCESS)
+		if (vkCreateShaderModule(m_Device.GetDevice(), &createInfo, nullptr, shaderModule) != VK_SUCCESS)
 		{
 			FATAL_LOG("Failed to create shader module");
 		}
 	}
 
-	void GraphicsPipeline::Bind(VkCommandBuffer commandBuffer)
+	void Pipeline::Bind(VkCommandBuffer commandBuffer)
 	{
 		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_GraphicsPipeline);
 	}
 
-	void GraphicsPipeline::DefaultPipelineConfigInfo(PipelineConfigInfo& configInfo)
+	void Pipeline::DefaultPipelineConfigInfo(PipelineConfigInfo& configInfo)
 	{
 		configInfo.inputAssemblyInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
 		configInfo.inputAssemblyInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;

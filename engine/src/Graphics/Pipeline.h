@@ -25,14 +25,14 @@ namespace vke
         uint32_t subpass = 0;
     };
 
-    class GraphicsPipeline
+    class Pipeline
     {
     public:
-        GraphicsPipeline(GraphicsDevice& device, const std::string& vertPath, const std::string& fragPath, const PipelineConfigInfo& configInfo);
-        ~GraphicsPipeline();
+        Pipeline(Device& device, const std::string& vertPath, const std::string& fragPath, const PipelineConfigInfo& configInfo);
+        ~Pipeline();
 
-        GraphicsPipeline(const GraphicsPipeline&) = delete;
-        GraphicsPipeline& operator=(const GraphicsPipeline&) = delete;
+        Pipeline(const Pipeline&) = delete;
+        Pipeline& operator=(const Pipeline&) = delete;
 
         void Bind(VkCommandBuffer commandBuffer);
         static void DefaultPipelineConfigInfo(PipelineConfigInfo& configInfo);
@@ -43,7 +43,7 @@ namespace vke
         void CreateGraphicsPipeline(const std::string& vertPath, const std::string& fragPath, const PipelineConfigInfo& configInfo);
         void CreateShaderModule(const std::vector<char>& code, VkShaderModule* shaderModule);
 
-        GraphicsDevice& m_Device;
+        Device& m_Device;
         VkPipeline m_GraphicsPipeline;
         VkShaderModule m_VertShaderModule;
         VkShaderModule m_FragShaderModule;
